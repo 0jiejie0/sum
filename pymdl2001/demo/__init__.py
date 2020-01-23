@@ -22,8 +22,9 @@ def start():
         directions[2]: 0,
         directions[3]: 0,
     }
-    step_once = 2.5
+    step_once = 3
     while True:
+        pygame.time.Clock().tick(150)
         # 绘制背景
         screen.blit(background, (0, 0))
         # 绘制飞机
