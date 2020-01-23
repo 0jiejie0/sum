@@ -9,8 +9,8 @@ class Window:
 
 class WindowGame:
     CAPTION = '洒墨 - 简单小游戏'  # 窗口标题
-    SCREEN_WIDTH = 640
-    SCREEN_HEIGHT = 480
+    SCREEN_WIDTH = 480
+    SCREEN_HEIGHT = 640
 
 
 class Symbol:
