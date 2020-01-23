@@ -1,2 +1,1 @@
 pygame==1.9.6
-# pipreqs.exe  ./ --force --encoding=utf-8

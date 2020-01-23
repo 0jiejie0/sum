@@ -15,7 +15,7 @@ class TestDemoClass(TestCase):
         TestCase.assertEqual(self, 2, 2, '这里的单元测试不通过')
         TestCase.assertEqual(self, 2, 2)
 
-        TestCase.assertEqual(self, demo.demo(), None)
+        TestCase.assertEqual(self, demo.start(), None)
         TestCase.assertEqual(self, DemoClass.demo(self.demo), "Hello world.\nHello Demo.")
         TestCase.assertEqual(self, DemoClass.demo(self.demo), "Hello world.\nHello Demo.")
 

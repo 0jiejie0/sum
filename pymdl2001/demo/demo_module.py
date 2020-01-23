@@ -1,5 +1,6 @@
 import pygame
 from constants import *
+from output import *
 
 
 class DemoClass:
@@ -27,7 +28,15 @@ class DemoClass:
 
 
 class KeyInput:
-    def lunch(self):
+    """
+    控制台输出键盘状态
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.__lunch__()
+
+    def __lunch__(self):
         # 初始化
         pygame.init()
         screen = pygame.display.set_mode([Window.SCREEN_WIDTH, Window.SCREEN_HEIGHT])
@@ -64,25 +73,43 @@ class KeyInput:
                     info.append(time.get_ticks())
                 info.append(event)
                 info.append(status)
-                self.output(info)
-        # return temp
+                print_key_info(info)
 
-    def output(self, info=[]):
-        """
-        对按键信息作输出处理
-        :param info:
-        :return:
-        """
-        # for item in info:
-        #     print(item)
-        print(info)
-        chars = []
-        dic = info[-1]
-        for c in dic:
-            if dic[c] == 1:
-                chars.append(c)
-        chars.sort()
-        for c in chars:
-            print(c, end='')
-        else:
-            print()
+
+class DishesFishOnTable:
+    """
+    饭桌上的碗筷背景 + ？？鱼光标
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.__lunch__()
+
+    def __lunch__(self):
+        # 初始化
+        pygame.init()
+        screen = pygame.display.set_mode((WindowGame.SCREEN_WIDTH, WindowGame.SCREEN_HEIGHT))
+        pygame.display.set_caption(WindowGame.CAPTION)
+        # 载入图片
+        background = pygame.image.load('resources/back.jpg').convert()
+        cursor = pygame.image.load('resources/cur.png').convert_alpha()
+        while True:
+            # 绘制背景
+            screen.blit(background, (0, 0))
+            # 鼠标位置
+            x, y = pygame.mouse.get_pos()
+            # 计算左上角位置
+            x -= cursor.get_width() / 2
+            y -= cursor.get_height() / 2
+            # 绘制光标
+            screen.blit(cursor, (x, y))
+            # 更新屏幕
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == QUIT:  # 退出
+                    quit()
+                    exit()
+                elif event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
+                    if event.key == 27:  # 退出
+                        quit()
+                        exit()

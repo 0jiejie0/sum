@@ -7,6 +7,12 @@ class Window:
     SCREEN_HEIGHT = 80
 
 
+class WindowGame:
+    CAPTION = '洒墨 - 简单小游戏'  # 窗口标题
+    SCREEN_WIDTH = 640
+    SCREEN_HEIGHT = 480
+
+
 class Symbol:
     KEYS = [
         K_q,
