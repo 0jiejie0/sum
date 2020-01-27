@@ -14,6 +14,7 @@ class WindowGame:
 
 
 class Symbol:
+    DIRECTIONS = (K_LEFT, K_RIGHT, K_UP, K_DOWN)
     KEYS = [
         K_q,
         K_w,
