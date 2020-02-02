@@ -49,3 +49,6 @@ class Symbol:
         K_PERIOD,
         K_SLASH
     ]
+
+    class Font:
+        SimHei = "SimHei"

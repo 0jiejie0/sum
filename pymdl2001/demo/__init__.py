@@ -171,7 +171,7 @@ def start():
     while True:  # 新一局游戏
         player = Player(plane_imgs, hero_pos)
         enemy = pygame.sprite.Group()
-        enemy_destory = pygame.sprite.Group()
+        enemy_destroy = pygame.sprite.Group()
         player_countdown = 1
         score = 0
         while True:
@@ -213,25 +213,26 @@ def start():
             enemy.update()
             enemy.draw(screen)
             # 子弹与敌机碰撞
-            enemy_destory.add(pygame.sprite.groupcollide(enemy, player.bullet, True, True))
+            enemy_destroy.add(pygame.sprite.groupcollide(enemy, player.bullet, True, True))
             # 飞机坠落切换动画
-            for e_dest in enemy_destory:
+            for e_dest in enemy_destroy:
                 screen.blit(enemy_destory_img[e_dest.countdown], e_dest.rect)
                 if time.get_ticks() % 14 == 0:
                     if e_dest.countdown < 3:
                         e_dest.countdown += 1
                     else:
-                        enemy_destory.remove(e_dest)
+                        e_dest.kill()
+                        enemy_destroy.remove(e_dest)
                         score += 1  # 击毁敌机，分数+1
             # 战机被撞
-            player_destorys = pygame.sprite.spritecollide(player, enemy, True)
-            if len(player_destorys) > 0:
-                enemy_destory.add(player_destorys)
+            player_destroys = pygame.sprite.spritecollide(player, enemy, True)
+            if len(player_destroys) > 0:
+                enemy_destroy.add(player_destroys)
                 player.is_hit = True
             # 显示分数
             if score < 0:
                 score = 0
-            screen.blit(pygame.font.SysFont("微软雅黑.ttf", 40).render("Score: " + str(score), 3, (255, 0, 0)), (30, 20))
+            screen.blit(pygame.font.SysFont(Symbol.Font.SimHei, 30).render("当前得分：" + str(score), 3, (255, 0, 0)), (30, 20))
             # 更新屏幕
             player.bullet.update()
             pygame.display.update()
@@ -242,12 +243,12 @@ def start():
         if score < 0:
             score = 0
         screen.blit(gameover, (0, 0))
-        screen.blit(pygame.font.SysFont("微软雅黑.ttf", 40).render("Best Score: " + str(score_history), 3, (50, 50, 50)),
-                    (30, 20))
-        screen.blit(pygame.font.SysFont("微软雅黑.ttf", 40).render("Your Score: " + str(score), 3, (255, 255, 255)),
-                    (30, 50))
+        screen.blit(pygame.font.SysFont(Symbol.Font.SimHei, 30).render("历史最高分：" + str(score_history), 3, (50, 50, 50)),
+                    (30, 30))
+        screen.blit(pygame.font.SysFont(Symbol.Font.SimHei, 30).render("本次得分：" + str(score), 3, (255, 255, 255)),
+                    (60, 70))
         if score > score_history:
             score_history = score
-            screen.blit(pygame.font.SysFont("微软雅黑.ttf", 22).render("Break the record!", 3, (0, 255, 0)), (220, 60))
-            screen.blit(pygame.font.SysFont("微软雅黑.ttf", 70).render("CONGRATULATE!", 3, (0, 255, 0)), (35, 220))
+            screen.blit(pygame.font.SysFont(Symbol.Font.SimHei, 16).render("打破记录！", 3, (255, 0, 0)), (380, 78))
+            screen.blit(pygame.font.SysFont(Symbol.Font.SimHei, 70).render("恭喜您！", 3, (0, 0, 200)), (125, 200))
         pygame.display.update()
