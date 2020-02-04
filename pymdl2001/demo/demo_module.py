@@ -141,12 +141,31 @@ class PlaneWar:
             self.rect.top = position[1]
             self.speed = 6
             self.countdown = 0
+            self.offset = 0
 
         def update(self):
-            self.rect.top += self.speed
+            if PlaneWar.score < 0:
+                PlaneWar.score = 0
+            level = PlaneWar.score >> 3  # 作战等级
+            self.rect.top += self.speed * ((level * 0.3) + 1)
             if self.rect.top > WindowGame.SCREEN_HEIGHT:
                 self.kill()
                 PlaneWar.score -= 1  # 错过敌机，扣除一个分数
+            self.offset += level * level * self.speed * (
+                    randint(0, WindowGame.SCREEN_WIDTH) - (WindowGame.SCREEN_WIDTH >> 1))  # 左右移动敌机
+            self.offset = int(self.offset) >> 1
+            self.offset //= WindowGame.SCREEN_WIDTH
+            if self.offset > (self.speed * ((level * 0.3) + 1)):
+                self.offset = (self.speed * ((level * 0.3) + 1))
+            elif self.offset < -(self.speed * ((level * 0.3) + 1)):
+                self.offset = -(self.speed * ((level * 0.3) + 1))
+            self.rect.left += self.offset
+            if self.offset == -1:
+                self.offset = 0
+            if self.rect.left < 0:  # 边界检查
+                self.rect.left = 0 - self.rect.left
+            elif self.rect.left > WindowGame.SCREEN_WIDTH - self.image.get_width():
+                self.rect.left = WindowGame.SCREEN_WIDTH - self.image.get_width()
 
     class Bullet(pygame.sprite.Sprite):
         """
@@ -169,12 +188,14 @@ class PlaneWar:
             }
 
         def update(self):
-            self.rect.top += (self.offset[K_DOWN] - self.offset[K_UP]) * self.speed
+            self.rect.top += (self.offset[K_DOWN] - self.offset[K_UP]) * \
+                             self.speed * ((PlaneWar.score >> 3) * 0.3 + 1)
             if self.rect.top < -self.rect.height:
                 self.kill()
             elif self.rect.top > WindowGame.SCREEN_HEIGHT:
                 self.kill()
-            self.rect.left += (self.offset[K_RIGHT] - self.offset[K_LEFT]) * self.speed
+            self.rect.left += (self.offset[K_RIGHT] - self.offset[K_LEFT]) * \
+                              self.speed * ((PlaneWar.score >> 3) * 0.3 + 1)
             if self.rect.left < -self.rect.width:
                 self.kill()
             elif self.rect.left > WindowGame.SCREEN_WIDTH:
@@ -215,13 +236,15 @@ class PlaneWar:
             if self.is_hit:  # 被击中，失去移动能力
                 return
             # 高度平移
-            self.rect.top += (self.offset[K_DOWN] - self.offset[K_UP]) * self.speed
+            self.rect.top += (self.offset[K_DOWN] - self.offset[K_UP]) * \
+                             self.speed * ((PlaneWar.score >> 3) * 0.4 + 1)
             if self.rect.top < 200:
                 self.rect.top = 200
             elif self.rect.top > WindowGame.SCREEN_HEIGHT - self.rect.height:
                 self.rect.top = WindowGame.SCREEN_HEIGHT - self.rect.height
             # 左右平移
-            self.rect.left += (self.offset[K_RIGHT] - self.offset[K_LEFT]) * self.speed
+            self.rect.left += (self.offset[K_RIGHT] - self.offset[K_LEFT]) * \
+                              self.speed * ((PlaneWar.score >> 3) * 0.4 + 1)
             if self.rect.left < 0:
                 self.rect.left = 0
             elif self.rect.left > WindowGame.SCREEN_WIDTH - self.rect.width:
@@ -231,7 +254,7 @@ class PlaneWar:
             if self.is_hit:  # 被击中，失去射击能力
                 return
             bullet = PlaneWar.Bullet(bullet_img, self.rect.midtop)
-            bullet.offset[K_UP] = 8  # 射击速度
+            bullet.offset[K_UP] = 9  # 射击速度
             self.bullet.add(bullet)
 
     def check_whitespace_quit(self, event):
@@ -291,7 +314,8 @@ class PlaneWar:
             enemy = pygame.sprite.Group()
             enemy_destroy = pygame.sprite.Group()
             player_countdown = 1
-            self.score = 0
+            PlaneWar.score = 0
+            temp_score = -1
             while True:
                 pygame.time.Clock().tick(128)
                 for event in pygame.event.get():  # 监听键盘和窗口退出事件
@@ -320,7 +344,7 @@ class PlaneWar:
                 else:
                     screen.blit(player.image[0 if pygame.time.get_ticks() % 512 > 256 else 1], player.rect)
                 # 绘制子弹
-                if time.get_ticks() % 8 == 0:
+                if time.get_ticks() % 6 == 0:
                     player.single_shoot(bullet_img)
                 player.bullet.draw(screen)
                 # 绘制敌机
@@ -340,17 +364,21 @@ class PlaneWar:
                         else:
                             e_dest.kill()
                             enemy_destroy.remove(e_dest)
-                            self.score += 1  # 击毁敌机，分数+1
+                            PlaneWar.score += 1  # 击毁敌机，分数+1
                 # 战机被撞
                 player_destroys = pygame.sprite.spritecollide(player, enemy, True)
                 if len(player_destroys) > 0:
                     enemy_destroy.add(player_destroys)
                     player.is_hit = True
+                    # 玩家最终得分为：战机击毁前得分+战机撞击敌机数目
+                    temp_score = PlaneWar.score + len(player_destroys)
                 # 显示分数
-                if self.score < 0:
-                    self.score = 0
+                if temp_score != -1:
+                    PlaneWar.score = temp_score
+                if PlaneWar.score < 0:
+                    PlaneWar.score = 0
                 screen.blit(
-                    pygame.font.SysFont(Symbol.Font.SimHei, 30).render("当前得分：" + str(self.score), 3, (255, 0, 0)),
+                    pygame.font.SysFont(Symbol.Font.SimHei, 30).render("当前得分：" + str(PlaneWar.score), 3, (255, 0, 0)),
                     (30, 20))
                 # 更新屏幕
                 player.bullet.update()
@@ -358,17 +386,16 @@ class PlaneWar:
                 if self.pause == 2:  # 打开游戏，加载一帧画面后静止
                     self.pause = 1
             # 游戏结束画面
-            if self.score < 0:
-                self.score = 0
+            PlaneWar.score = temp_score
+            if PlaneWar.score < 0:
+                PlaneWar.score = 0
             screen.blit(gameover, (0, 0))
-            screen.blit(
-                pygame.font.SysFont(Symbol.Font.SimHei, 30).render("历史最高分：" + str(self.score_history), 3, (50, 50, 50)),
-                (30, 30))
-            screen.blit(
-                pygame.font.SysFont(Symbol.Font.SimHei, 30).render("本次得分：" + str(self.score), 3, (255, 255, 255)),
-                (60, 70))
-            if self.score > self.score_history:
-                self.score_history = self.score
+            screen.blit(pygame.font.SysFont(Symbol.Font.SimHei, 30)
+                        .render("历史最高分：" + str(PlaneWar.score_history), 3, (50, 50, 50)), (30, 30))
+            screen.blit(pygame.font.SysFont(Symbol.Font.SimHei, 30)
+                        .render("本次得分：" + str(PlaneWar.score), 3, (255, 255, 255)), (60, 70))
+            if PlaneWar.score > PlaneWar.score_history:
+                PlaneWar.score_history = PlaneWar.score
                 screen.blit(pygame.font.SysFont(Symbol.Font.SimHei, 16).render("打破记录！", 3, (255, 0, 0)), (380, 78))
                 screen.blit(pygame.font.SysFont(Symbol.Font.SimHei, 70).render("恭喜您！", 3, (0, 0, 200)), (125, 200))
             pygame.display.update()
