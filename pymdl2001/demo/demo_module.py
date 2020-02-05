@@ -400,6 +400,41 @@ class PlaneWar:
                 screen.blit(pygame.font.SysFont(Symbol.Font.SimHei, 70).render("恭喜您！", 3, (0, 0, 200)), (125, 200))
             pygame.display.update()
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.start()
+
+class SysFonts:
+    def show(self):
+        # 初始化
+        pygame.init()
+        screen = pygame.display.set_mode((1280, 640))
+        pygame.display.set_caption('洒墨 - 系统字体展示')
+        # 载入图片
+        background = pygame.image.load('resources/background.png')
+        # 绘制背景
+        # screen.blit(background, (0, 0))
+        r = 0  # 行
+        c = 0  # 列
+        n = 0
+        for f in pygame.font.get_fonts():
+            n += 1
+            if (78 <= n) and (n <= 79):
+                continue
+            screen.blit(pygame.font.SysFont(str(f), 20).render("洒墨" + str(f)[0:9], 3, (255, 255, 255)),
+                        (160 * c, 21 * r))
+            r += 1
+            if r == 30:
+                c += 1
+                r = 0
+        screen.blit(
+            pygame.font.SysFont(str(pygame.font.get_fonts()[78]), 20).render(str(43543435)[0:14], 3, (255, 255, 255)),
+            (160 * c, 21 * 28))
+        screen.blit(
+            pygame.font.SysFont(str(pygame.font.get_fonts()[79]), 20).render(str("hell撒旦法？？?")[0:14], 3,
+                                                                             (255, 255, 255)),
+            (160 * c, 21 * 29))
+        # 更新屏幕
+        pygame.display.update()
+        while True:
+            pygame.time.Clock().tick(128)
+            for event in pygame.event.get():
+                PlaneWar().check_whitespace_quit(event)
+                print("", end="")

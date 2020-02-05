@@ -13,6 +13,12 @@ class WindowGame:
     SCREEN_HEIGHT = 640
 
 
+class WindowTest:
+    CAPTION = '洒墨 - 测试用例'  # 窗口标题
+    SCREEN_WIDTH = 1280
+    SCREEN_HEIGHT = 640
+
+
 class Symbol:
     DIRECTIONS = (K_LEFT, K_RIGHT, K_UP, K_DOWN)
     KEYS = [
