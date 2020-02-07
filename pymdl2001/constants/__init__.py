@@ -3,8 +3,8 @@ from pygame import *
 
 class Window:
     CAPTION = '洒墨 - 天涯咫尺 待君挥毫'  # 窗口标题
-    SCREEN_WIDTH = 360
-    SCREEN_HEIGHT = 80
+    SCREEN_WIDTH = 305
+    SCREEN_HEIGHT = 90
 
 
 class WindowGame:

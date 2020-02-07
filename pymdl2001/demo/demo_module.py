@@ -32,6 +32,7 @@ class DemoClass:
 class KeyInput:
     """
     控制台输出键盘状态
+    ==>  输出转到窗体
     """
 
     def __init__(self) -> None:
@@ -45,6 +46,7 @@ class KeyInput:
         pygame.display.set_caption(Window.CAPTION)
         status = {}
         while True:
+            pygame.time.Clock().tick(256)
             for event in pygame.event.get():
                 info = []
                 if event.type == QUIT:  # 退出
@@ -69,6 +71,10 @@ class KeyInput:
                             info.append('右上档键')
                         if event.mod & pygame.KMOD_SHIFT:
                             info.append('上档键')
+                    info.append(event)
+                    info.append(status)
+                    show_visiable_key_info(screen, info)
+                    continue
                 elif event.type == MOUSEMOTION:
                     continue
                 else:
@@ -76,6 +82,7 @@ class KeyInput:
                 info.append(event)
                 info.append(status)
                 print_key_info(info)
+            pygame.display.update()
 
 
 class DishesFishOnTable:
@@ -418,7 +425,10 @@ class SysFonts:
             n += 1
             if (78 <= n) and (n <= 79):
                 continue
-            screen.blit(pygame.font.SysFont(str(f), 20).render("洒墨" + str(f)[0:9], 3, (255, 255, 255)),
+            color_ = (255, 255, 255)
+            if n == 0:
+                color_ = (0, 255, 0)
+            screen.blit(pygame.font.SysFont(str(f), 20).render("洒墨" + str(f)[0:9], 3, color_),
                         (160 * c, 21 * r))
             r += 1
             if r == 30:
